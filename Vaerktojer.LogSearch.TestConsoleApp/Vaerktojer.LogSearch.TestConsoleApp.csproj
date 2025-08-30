@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PublishAot>false</PublishAot>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Bogus" Version="35.6.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.8" />
+    <PackageReference Include="Vaerktojer.Prompt" Version="0.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Vaerktojer.LogSearch.Abstractions\Vaerktojer.LogSearch.Abstractions.csproj" />
+    <ProjectReference Include="..\Vaerktojer.LogSearch.Data\Vaerktojer.LogSearch.Data.csproj" />
+    <ProjectReference Include="..\Vaerktojer.LogSearch.Lib\Vaerktojer.LogSearch.Lib.csproj" />
+  </ItemGroup>
+</Project>

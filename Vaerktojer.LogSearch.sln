@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36408.4 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vaerktojer.LogSearch.ConsoleApp", "Vaerktojer.LogSearch.ConsoleApp\Vaerktojer.LogSearch.ConsoleApp.csproj", "{C97EAE6D-17C9-488C-99C7-E2AACD8BE240}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vaerktojer.LogSearch.Benchmarks", "Vaerktojer.LogSearch.Benchmarks\Vaerktojer.LogSearch.Benchmarks.csproj", "{5E4D187E-E9F9-42FF-BCCA-ECEBADE96C53}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vaerktojer.LogSearch.Lib", "Vaerktojer.LogSearch.Lib\Vaerktojer.LogSearch.Lib.csproj", "{4E458B54-2447-44FA-A068-1886B03EA54C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vaerktojer.LogSearch.Abstractions", "Vaerktojer.LogSearch.Abstractions\Vaerktojer.LogSearch.Abstractions.csproj", "{6DF632F4-0E28-4A98-BB5E-B05B23A1A0CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vaerktojer.LogSearch.Data", "Vaerktojer.LogSearch.Data\Vaerktojer.LogSearch.Data.csproj", "{B079484E-3EC9-4F1E-930B-D7837892227B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vaerktojer.LogSearch.TestConsoleApp", "Vaerktojer.LogSearch.TestConsoleApp\Vaerktojer.LogSearch.TestConsoleApp.csproj", "{1619E15B-C25E-4B1F-8851-8A65530B3D62}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C97EAE6D-17C9-488C-99C7-E2AACD8BE240}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C97EAE6D-17C9-488C-99C7-E2AACD8BE240}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C97EAE6D-17C9-488C-99C7-E2AACD8BE240}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C97EAE6D-17C9-488C-99C7-E2AACD8BE240}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E4D187E-E9F9-42FF-BCCA-ECEBADE96C53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E4D187E-E9F9-42FF-BCCA-ECEBADE96C53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E4D187E-E9F9-42FF-BCCA-ECEBADE96C53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E4D187E-E9F9-42FF-BCCA-ECEBADE96C53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E458B54-2447-44FA-A068-1886B03EA54C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E458B54-2447-44FA-A068-1886B03EA54C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E458B54-2447-44FA-A068-1886B03EA54C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E458B54-2447-44FA-A068-1886B03EA54C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DF632F4-0E28-4A98-BB5E-B05B23A1A0CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DF632F4-0E28-4A98-BB5E-B05B23A1A0CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DF632F4-0E28-4A98-BB5E-B05B23A1A0CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DF632F4-0E28-4A98-BB5E-B05B23A1A0CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B079484E-3EC9-4F1E-930B-D7837892227B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B079484E-3EC9-4F1E-930B-D7837892227B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B079484E-3EC9-4F1E-930B-D7837892227B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B079484E-3EC9-4F1E-930B-D7837892227B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1619E15B-C25E-4B1F-8851-8A65530B3D62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1619E15B-C25E-4B1F-8851-8A65530B3D62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1619E15B-C25E-4B1F-8851-8A65530B3D62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1619E15B-C25E-4B1F-8851-8A65530B3D62}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A5DBBC63-47B0-4B25-89D0-A820A6DFA99A}
+	EndGlobalSection
+EndGlobal
