@@ -16,4 +16,7 @@ public static class Utils
             }
         );
     }
+
+    public static bool IsZip(string path) =>
+        Path.GetExtension(path).Equals(".zip", StringComparison.OrdinalIgnoreCase);
 }

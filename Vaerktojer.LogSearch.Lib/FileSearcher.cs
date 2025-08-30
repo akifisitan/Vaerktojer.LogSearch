@@ -1,125 +1,20 @@
-﻿using System.Diagnostics;
-using System.Text.RegularExpressions;
-using Microsoft.Extensions.FileSystemGlobbing;
-using Microsoft.Extensions.Logging;
+﻿using System.Runtime.CompilerServices;
+using Vaerktojer.LogSearch.Abstractions;
 using Vaerktojer.LogSearch.Data;
-using ZLogger;
 
 namespace Vaerktojer.LogSearch.Lib;
 
 public sealed class FileSearcher
 {
-    private readonly ILogger<FileSearcher> _logger;
+    private const int _bufferSize = 4096 * 2;
 
-    public FileSearcher(ILogger<FileSearcher> logger)
-    {
-        _logger = logger;
-    }
-
-    private const int bufferSize = 4096 * 2;
-
-    public void Search(
-        string searchPattern,
-        string searchDirectory,
-        DateTimeOffset? startDate = null,
-        DateTimeOffset? endDate = null,
-        bool searchZip = false,
-        string includePattern = "*",
-        string? excludePattern = null,
-        FileSearchOptions? fileSearchOptions = null,
-        ZipFileSearchOptions? zipFileSearchOptions = null
-    )
-    {
-        var searchRegex = new Regex(
-            searchPattern,
-            RegexOptions.Compiled | RegexOptions.IgnoreCase,
-            TimeSpan.FromMilliseconds(250)
-        );
-
-        var matcher = new Matcher().AddInclude(includePattern);
-
-        if (!string.IsNullOrWhiteSpace(excludePattern))
-        {
-            matcher.AddExclude(excludePattern);
-        }
-
-        var filePathEnumerator = FileEnumerator.EnumerateFiles(
-            searchDirectory,
-            includeFilePredicate: path =>
-            {
-                if (!matcher.Match(searchDirectory, path).HasMatches)
-                {
-                    return false;
-                }
-
-                var lastWriteTime = File.GetLastWriteTime(path);
-
-                //lastWriteTime.TimeOfDay >= startTime && lastWriteTime <= endTime
-
-                //return lastWriteTime >= startDate && lastWriteTime <= endDate;
-
-                return (startDate, endDate) switch
-                {
-                    (null, null) => true,
-                    (not null, null) => startDate <= lastWriteTime,
-                    (null, not null) => lastWriteTime <= endDate,
-                    (not null, not null) => startDate <= lastWriteTime && lastWriteTime <= endDate,
-                };
-            }
-        );
-
-        var sw = Stopwatch.StartNew();
-
-        var count = 0;
-
-        foreach (var filePath in filePathEnumerator)
-        {
-            InternalSearch(filePath);
-            count++;
-        }
-
-        Console.WriteLine(
-            $"Finished searching through {count} files in {sw.Elapsed.TotalSeconds} seconds."
-        );
-
-        static bool IsZip(string path) =>
-            Path.GetExtension(path)?.Equals(".zip", StringComparison.OrdinalIgnoreCase) is true;
-
-        void InternalSearch(string path)
-        {
-            try
-            {
-                var searchFileResult =
-                    !IsZip(path) ? SearchInFile(path, searchRegex, options: fileSearchOptions)
-                    : searchZip
-                        ? ZipFileSearcher.SearchInZip(
-                            path,
-                            searchRegex,
-                            options: zipFileSearchOptions,
-                            includeFileFilter: entry =>
-                                matcher.Match(entry.FullName).HasMatches
-                                && entry.LastWriteTime >= startDate
-                                && entry.LastWriteTime <= endDate
-                        )
-                    : [];
-
-                foreach (var searchResult in searchFileResult)
-                {
-                    _logger.ZLogTrace($"{searchResult}");
-                }
-            }
-            catch (FileNotFoundException)
-            {
-                _logger.ZLogError($"Error: File not found at '{path}'");
-            }
-        }
-    }
-
-    private static IEnumerable<SearchResult> SearchInFile(
+    public static IEnumerable<SearchResult> SearchInFile<TMatcher>(
         string filePath,
-        Regex searchRegex,
-        FileSearchOptions? options = null
+        TMatcher matcher,
+        FileSearchOptions? options = null,
+        CancellationToken cancellationToken = default
     )
+        where TMatcher : ILineMatcher
     {
         options ??= FileSearchOptions.Default;
 
@@ -128,7 +23,7 @@ public sealed class FileSearcher
             FileMode.Open,
             FileAccess.Read,
             FileShare.Read,
-            bufferSize,
+            _bufferSize,
             FileOptions.SequentialScan
         );
 
@@ -136,10 +31,13 @@ public sealed class FileSearcher
 
         string? line;
         var lineNumber = 0;
+
         while ((line = reader.ReadLine()) != null)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             lineNumber++;
-            if (searchRegex.IsMatch(line))
+            if (matcher.Match(line))
             {
                 yield return new(filePath, lineNumber, line);
                 if (options.StopWhenFound)
@@ -150,11 +48,13 @@ public sealed class FileSearcher
         }
     }
 
-    private static async IAsyncEnumerable<SearchResult> SearchInFileAsync(
+    public static async IAsyncEnumerable<SearchResult> SearchInFileAsync<TMatcher>(
         string filePath,
-        Regex searchRegex,
-        FileSearchOptions? options = null
+        TMatcher matcher,
+        FileSearchOptions? options = null,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default
     )
+        where TMatcher : ILineMatcher
     {
         options ??= FileSearchOptions.Default;
 
@@ -163,7 +63,7 @@ public sealed class FileSearcher
             FileMode.Open,
             FileAccess.Read,
             FileShare.Read,
-            bufferSize,
+            _bufferSize,
             FileOptions.Asynchronous | FileOptions.SequentialScan
         );
 
@@ -171,10 +71,12 @@ public sealed class FileSearcher
 
         string? line;
         var lineNumber = 0;
-        while ((line = await reader.ReadLineAsync().ConfigureAwait(false)) != null)
+
+        while ((line = await reader.ReadLineAsync(cancellationToken).ConfigureAwait(false)) != null)
         {
             lineNumber++;
-            if (searchRegex.IsMatch(line))
+
+            if (matcher.Match(line))
             {
                 yield return new(filePath, lineNumber, line);
 
