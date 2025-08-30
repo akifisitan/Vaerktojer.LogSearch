@@ -1,15 +1,24 @@
 ﻿using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.FileSystemGlobbing;
+using Microsoft.Extensions.Logging;
 using Vaerktojer.LogSearch.Data;
+using ZLogger;
 
 namespace Vaerktojer.LogSearch.Lib;
 
 public sealed class FileSearcher
 {
+    private readonly ILogger<FileSearcher> _logger;
+
+    public FileSearcher(ILogger<FileSearcher> logger)
+    {
+        _logger = logger;
+    }
+
     private const int bufferSize = 4096 * 2;
 
-    public static void Search(
+    public void Search(
         string searchPattern,
         string searchDirectory,
         DateTimeOffset? startDate = null,
@@ -96,12 +105,12 @@ public sealed class FileSearcher
 
                 foreach (var searchResult in searchFileResult)
                 {
-                    Log($"{searchResult}");
+                    _logger.ZLogTrace($"{searchResult}");
                 }
             }
             catch (FileNotFoundException)
             {
-                Log($"Error: File not found at '{path}'");
+                _logger.ZLogError($"Error: File not found at '{path}'");
             }
         }
     }
@@ -175,10 +184,5 @@ public sealed class FileSearcher
                 }
             }
         }
-    }
-
-    private static void Log(string message)
-    {
-        Console.WriteLine(message);
     }
 }

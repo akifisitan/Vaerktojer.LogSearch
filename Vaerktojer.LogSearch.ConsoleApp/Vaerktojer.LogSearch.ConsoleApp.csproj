@@ -11,6 +11,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.8" />
     <PackageReference Include="Vaerktojer.Prompt" Version="0.0.1" />
+    <PackageReference Include="ZLogger" Version="2.5.10" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Vaerktojer.LogSearch.Abstractions\Vaerktojer.LogSearch.Abstractions.csproj" />

@@ -1,61 +1,36 @@
-﻿using System.Diagnostics;
-using System.IO.Compression;
-using System.Text.RegularExpressions;
+﻿using System.IO.Compression;
+using System.Runtime.CompilerServices;
+using System.Text;
 using Vaerktojer.LogSearch.Data;
 
 namespace Vaerktojer.LogSearch.Lib;
 
 public sealed class ZipFileSearcher
 {
-    public static IEnumerable<SearchResult> SearchInZip(
-        string zipFilePath,
-        Regex searchRegex,
-        Func<ZipArchiveEntry, bool>? includeFileFilter = null,
-        Func<ZipArchiveEntry, bool>? excludeFileFilter = null,
-        ZipFileSearchOptions? options = null
-    )
-    {
-        try
-        {
-            return SearchInZipInternal(
-                zipFilePath,
-                searchRegex,
-                includeFileFilter,
-                excludeFileFilter,
-                options
-            );
-        }
-        catch (InvalidDataException)
-        {
-            //Log($"Error: The file at '{zipFilePath}' is not a valid zip archive.");
-            return [];
-        }
-        catch (Exception ex) when (ex is not FileNotFoundException)
-        {
-            //Log($"An unexpected error occurred: {ex.Message}");
-            return [];
-        }
-    }
+    private static readonly Func<ZipArchiveEntry, bool> _defaultIncludeFileFilter = _ => true;
+    private static readonly Func<ZipArchiveEntry, bool> _defaultExcludeFileFilter = _ => false;
+    private const int _bufferSize = 1024;
 
-    private static IEnumerable<SearchResult> SearchInZipInternal(
+    public static IEnumerable<SearchResult> SearchInZip<T>(
         string zipFilePath,
-        Regex searchRegex,
+        T matcher,
+        Func<T, string, bool> matcherFunc,
         Func<ZipArchiveEntry, bool>? includeFileFilter = null,
         Func<ZipArchiveEntry, bool>? excludeFileFilter = null,
-        ZipFileSearchOptions? options = null
+        ZipFileSearchOptions? options = null,
+        CancellationToken cancellationToken = default
     )
     {
         options ??= ZipFileSearchOptions.Default;
-        includeFileFilter ??= _ => true;
-        excludeFileFilter ??= _ => false;
+        includeFileFilter ??= _defaultIncludeFileFilter;
+        excludeFileFilter ??= _defaultExcludeFileFilter;
 
-        // Warning: This stream is not thread safe
         using var archive = ZipFile.OpenRead(zipFilePath);
-
-        List<string> tp = [];
 
         foreach (var entry in archive.Entries)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             if (excludeFileFilter(entry) || !includeFileFilter(entry))
             {
                 continue;
@@ -69,21 +44,80 @@ public sealed class ZipFileSearcher
 
             while ((line = reader.ReadLine()) != null)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 lineNumber++;
 
-                if (searchRegex.IsMatch(line))
+                if (matcherFunc(matcher, line))
                 {
-                    tp.Add(entry.FullName);
+                    yield return new(Path.Combine(zipFilePath, entry.FullName), lineNumber, line);
 
-                    if (!string.IsNullOrWhiteSpace(options.ExtractPath))
+                    if (options.StopWhenFound)
                     {
-                        var sw = Stopwatch.StartNew();
-                        entry.ExtractToFile($"{entry.FullName.Replace('/', '-')}", overwrite: true);
-                        Console.WriteLine(
-                            $"Time taken to extract {entry.Length} bytes: {sw.Elapsed.TotalMilliseconds} ms."
-                        );
+                        yield break;
                     }
+                }
+            }
+        }
+    }
 
+    public static async IAsyncEnumerable<SearchResult> SearchInZipAsync<T>(
+        string zipFilePath,
+        T matcher,
+        Func<T, string, bool> matcherFunc,
+        Func<ZipArchiveEntry, bool>? includeFileFilter = null,
+        Func<ZipArchiveEntry, bool>? excludeFileFilter = null,
+        ZipFileSearchOptions? options = null,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default
+    )
+    {
+        options ??= ZipFileSearchOptions.Default;
+        includeFileFilter ??= _defaultIncludeFileFilter;
+        excludeFileFilter ??= _defaultExcludeFileFilter;
+
+        await using var zipFs = new FileStream(
+            zipFilePath,
+            FileMode.Open,
+            FileAccess.Read,
+            FileShare.Read,
+            _bufferSize,
+            FileOptions.Asynchronous | FileOptions.SequentialScan
+        );
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        using var archive = new ZipArchive(
+            zipFs,
+            ZipArchiveMode.Read,
+            leaveOpen: false,
+            Encoding.UTF8
+        );
+
+        foreach (var entry in archive.Entries)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (excludeFileFilter(entry) || !includeFileFilter(entry))
+            {
+                yield break;
+            }
+
+            using var stream = entry.Open();
+            using var reader = new StreamReader(stream);
+
+            string? line;
+            var lineNumber = 0;
+
+            while (
+                (line = await reader.ReadLineAsync(cancellationToken).ConfigureAwait(false)) != null
+            )
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                lineNumber++;
+
+                if (matcherFunc(matcher, line))
+                {
                     yield return new(Path.Combine(zipFilePath, entry.FullName), lineNumber, line);
 
                     if (options.StopWhenFound)
