@@ -5,7 +5,7 @@ using Bogus;
 
 namespace Vaerktojer.LogSearch.TestConsoleApp;
 
-internal class Program
+internal sealed class Program
 {
     private static readonly string[] Services =
     [
@@ -92,8 +92,9 @@ internal class Program
 
         Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outputPath)) ?? ".");
 
-        var faker = new Faker("en");
         var rnd = new Random(seed);
+        Randomizer.Seed = rnd;
+        var faker = new Faker("en");
 
         // Use a consistent newline for predictable size accounting
         using var fs = new FileStream(
