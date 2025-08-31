@@ -10,15 +10,15 @@ public sealed class ZipFileSearcher
 {
     private const int _bufferSize = 4096;
 
-    public static IEnumerable<SearchResult> SearchInZip<TLineMatcher, TFileMatcher>(
+    public static IEnumerable<SearchResult> SearchInZip<TLineMatcher, TZipArchiveEntryFilter>(
         string zipFilePath,
-        TLineMatcher matcher,
-        TFileMatcher fileFilter,
+        TLineMatcher lineMatcher,
+        TZipArchiveEntryFilter zipArchiveEntryFilter,
         ZipFileSearchOptions? options = null,
         CancellationToken cancellationToken = default
     )
         where TLineMatcher : ILineMatcher
-        where TFileMatcher : IIncludeable<ZipArchiveEntry>
+        where TZipArchiveEntryFilter : IZipArchiveEntryFilter
     {
         options ??= ZipFileSearchOptions.Default;
 
@@ -28,7 +28,7 @@ public sealed class ZipFileSearcher
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (!fileFilter.Include(entry))
+            if (!zipArchiveEntryFilter.Include(entry))
             {
                 continue;
             }
@@ -45,28 +45,31 @@ public sealed class ZipFileSearcher
 
                 lineNumber++;
 
-                if (matcher.Match(line))
+                if (lineMatcher.IsMatch(line))
                 {
                     yield return new(Path.Combine(zipFilePath, entry.FullName), lineNumber, line);
 
                     if (options.StopWhenFound)
                     {
-                        yield break;
+                        break;
                     }
                 }
             }
         }
     }
 
-    public static async IAsyncEnumerable<SearchResult> SearchInZipAsync<TLineMatcher, TFileMatcher>(
+    public static async IAsyncEnumerable<SearchResult> SearchInZipAsync<
+        TLineMatcher,
+        TZipArchiveEntryFilter
+    >(
         string zipFilePath,
-        TLineMatcher matcher,
-        TFileMatcher fileFilter,
+        TLineMatcher lineMatcher,
+        TZipArchiveEntryFilter zipArchiveEntryFilter,
         ZipFileSearchOptions? options = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default
     )
         where TLineMatcher : ILineMatcher
-        where TFileMatcher : IIncludeable<ZipArchiveEntry>
+        where TZipArchiveEntryFilter : IZipArchiveEntryFilter
     {
         options ??= ZipFileSearchOptions.Default;
 
@@ -92,7 +95,7 @@ public sealed class ZipFileSearcher
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (!fileFilter.Include(entry))
+            if (!zipArchiveEntryFilter.Include(entry))
             {
                 continue;
             }
@@ -107,17 +110,15 @@ public sealed class ZipFileSearcher
                 (line = await reader.ReadLineAsync(cancellationToken).ConfigureAwait(false)) != null
             )
             {
-                cancellationToken.ThrowIfCancellationRequested();
-
                 lineNumber++;
 
-                if (matcher.Match(line))
+                if (lineMatcher.IsMatch(line))
                 {
                     yield return new(Path.Combine(zipFilePath, entry.FullName), lineNumber, line);
 
                     if (options.StopWhenFound)
                     {
-                        yield break;
+                        break;
                     }
                 }
             }

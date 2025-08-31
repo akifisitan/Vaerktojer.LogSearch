@@ -38,7 +38,7 @@ public sealed class FileSearcher
 
             lineNumber++;
 
-            if (matcher.Match(line))
+            if (matcher.IsMatch(line))
             {
                 yield return new(filePath, lineNumber, line);
 
@@ -78,7 +78,7 @@ public sealed class FileSearcher
         {
             lineNumber++;
 
-            if (matcher.Match(line))
+            if (matcher.IsMatch(line))
             {
                 yield return new(filePath, lineNumber, line);
 

@@ -2,5 +2,5 @@
 
 public interface ILineMatcher
 {
-    bool Match(string line);
+    bool IsMatch(string line);
 }
