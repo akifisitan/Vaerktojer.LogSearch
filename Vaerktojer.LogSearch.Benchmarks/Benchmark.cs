@@ -1,5 +1,4 @@
-﻿using System.IO.Compression;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using BenchmarkDotNet.Attributes;
 using Vaerktojer.LogSearch.Data;
 using Vaerktojer.LogSearch.Lib;
@@ -22,41 +21,6 @@ public class Benchmark
         content.Contains(searchPattern);
 
     [Benchmark(Baseline = true)]
-    public void Bench1()
-    {
-        using var cts = new CancellationTokenSource();
-
-        var cancellationToken = cts.Token;
-
-        var fileEnumerator = FileEnumerator.EnumerateFiles(
-            _basePath,
-            Utils.IsZip,
-            cancellationToken: cancellationToken
-        );
-
-        var options = new ZipFileSearchOptions(StopWhenFound: true);
-
-        bool FileMatcher(ZipArchiveEntry entry) => entry.LastWriteTime < _endTime;
-
-        foreach (var filePath in fileEnumerator)
-        {
-            var enumerator = ZipFileSearcher.SearchInZip(
-                filePath,
-                _searchPattern,
-                Matcher,
-                FileMatcher,
-                options: options,
-                cancellationToken: cancellationToken
-            );
-
-            foreach (var item in enumerator)
-            {
-                Console.WriteLine(item);
-            }
-        }
-    }
-
-    [Benchmark]
     public void Bench2()
     {
         using var cts = new CancellationTokenSource();
@@ -65,7 +29,7 @@ public class Benchmark
 
         var fileEnumerator = FileEnumerator.EnumerateFiles(
             _basePath,
-            Utils.IsZip,
+            new Idk2(),
             cancellationToken: cancellationToken
         );
 
@@ -99,11 +63,13 @@ public class Benchmark
 
         var fileEnumerator = FileEnumerator.EnumerateFiles(
             _basePath,
-            Utils.IsZip,
+            new Idk2(),
             cancellationToken: cancellationToken
         );
 
         var options = new ZipFileSearchOptions(StopWhenFound: true);
+        var lineMatcher = new ContainsLineMatcher(_searchPattern);
+        var fileMatcher = new ZipArchiveEntryMatcher(_endTime);
 
         foreach (var chunks in fileEnumerator.Chunk(5))
         {
@@ -114,9 +80,8 @@ public class Benchmark
         {
             var enumerator = ZipFileSearcher.SearchInZipAsync(
                 filePath,
-                _searchPattern,
-                Matcher,
-                entry => entry.LastWriteTime < DateTime.Now,
+                lineMatcher,
+                fileMatcher,
                 options: options,
                 cancellationToken: cancellationToken
             );

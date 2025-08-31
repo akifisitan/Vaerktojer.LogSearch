@@ -1,53 +1,57 @@
-﻿namespace Vaerktojer.LogSearch.Lib;
+﻿using System.IO.Enumeration;
+using Vaerktojer.LogSearch.Abstractions;
+
+namespace Vaerktojer.LogSearch.Lib;
 
 public static class FileEnumerator
 {
-    private static readonly Func<string, bool> _defaultIncludeFilePredicate = _ => true;
-    private static readonly Func<string, bool> _defaultIgnoreFilePredicate = _ => false;
-    private static readonly EnumerationOptions _defaultEnumerationOptions = new()
-    {
-        IgnoreInaccessible = true,
-    };
-
-    public static IEnumerable<string> EnumerateFiles(
+    public static IEnumerable<string> EnumerateFiles<TFilter>(
         string rootPath,
-        Func<string, bool>? includeFilePredicate = null,
-        Func<string, bool>? ignoreDirPredicate = null,
-        EnumerationOptions? enumerationOptions = null,
+        TFilter filter,
         CancellationToken cancellationToken = default
     )
+        where TFilter : IFileSystemEnumerationFilter
     {
-        includeFilePredicate ??= _defaultIncludeFilePredicate;
-        ignoreDirPredicate ??= _defaultIgnoreFilePredicate;
-        enumerationOptions ??= _defaultEnumerationOptions;
+        var enumerationOptions = new EnumerationOptions
+        {
+            RecurseSubdirectories = true,
+            IgnoreInaccessible = true,
+            AttributesToSkip =
+                FileAttributes.ReparsePoint | FileAttributes.Hidden | FileAttributes.System,
+            ReturnSpecialDirectories = false,
+        };
 
-        var directoryStack = new Stack<string>();
-        directoryStack.Push(rootPath);
+        var enumeration = new FileSystemEnumerable<string>(
+            directory: rootPath,
+            transform: (ref FileSystemEntry entry) => entry.ToFullPath(),
+            options: enumerationOptions
+        )
+        {
+            ShouldIncludePredicate = (ref FileSystemEntry entry) =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (!entry.IsDirectory)
+                {
+                    return filter.IncludeFile(ref entry);
+                }
+                return false;
+            },
+            ShouldRecursePredicate = (ref FileSystemEntry entry) =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if ((entry.Attributes & FileAttributes.ReparsePoint) != 0)
+                {
+                    return false;
+                }
 
-        while (directoryStack.Count > 0)
+                return !filter.ExcludeDirectory(ref entry);
+            },
+        };
+
+        foreach (var path in enumeration)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var currentPath = directoryStack.Pop();
-
-            foreach (var filePath in Directory.EnumerateFiles(currentPath, "*", enumerationOptions))
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                if (includeFilePredicate(filePath))
-                {
-                    yield return filePath;
-                }
-            }
-
-            foreach (
-                var dirPath in Directory.EnumerateDirectories(currentPath, "*", enumerationOptions)
-            )
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                if (!ignoreDirPredicate(dirPath))
-                {
-                    directoryStack.Push(dirPath);
-                }
-            }
+            yield return path;
         }
     }
 }

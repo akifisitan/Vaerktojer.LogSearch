@@ -37,9 +37,11 @@ public sealed class FileSearcher
             cancellationToken.ThrowIfCancellationRequested();
 
             lineNumber++;
+
             if (matcher.Match(line))
             {
                 yield return new(filePath, lineNumber, line);
+
                 if (options.StopWhenFound)
                 {
                     yield break;

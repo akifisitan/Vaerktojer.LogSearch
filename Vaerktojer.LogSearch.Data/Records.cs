@@ -4,10 +4,10 @@ public sealed record SearchResult(string FilePath, int LineNumber, string LineCo
 
 public sealed record ZipFileSearchOptions(string? ExtractPath = null, bool StopWhenFound = true)
 {
-    public static readonly ZipFileSearchOptions Default = new();
+    public static ZipFileSearchOptions Default => new();
 }
 
 public sealed record FileSearchOptions(bool StopWhenFound = true)
 {
-    public static readonly FileSearchOptions Default = new();
+    public static FileSearchOptions Default => new();
 }

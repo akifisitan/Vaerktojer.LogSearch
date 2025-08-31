@@ -1,10 +1,7 @@
-﻿using BenchmarkDotNet.Running;
-using Vaerktojer.LogSearch.Benchmarks;
+﻿//var v = new Benchmark();
 
-var v = new Benchmark();
+//await v.BenchAsync();
 
-await v.BenchAsync();
+//BenchmarkRunner.Run<Benchmark>();
 
 Environment.Exit(0);
-
-BenchmarkRunner.Run<Benchmark>();

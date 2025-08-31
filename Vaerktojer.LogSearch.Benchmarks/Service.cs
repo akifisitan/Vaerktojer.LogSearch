@@ -1,4 +1,5 @@
 ﻿using System.IO.Compression;
+using System.IO.Enumeration;
 using Vaerktojer.LogSearch.Abstractions;
 
 namespace Vaerktojer.LogSearch.Benchmarks;
@@ -13,6 +14,14 @@ public readonly record struct ContainsLineMatcher : ILineMatcher
     }
 
     public bool Match(string line) => line.Contains(_value);
+}
+
+public sealed class ZipFileSystemEnumerationFilter : IFileSystemEnumerationFilter
+{
+    public bool IncludeFile(ref FileSystemEntry entry) =>
+        Path.GetExtension(entry.FileName).Equals(".zip", StringComparison.OrdinalIgnoreCase);
+
+    public bool ExcludeDirectory(ref FileSystemEntry entry) => false;
 }
 
 public readonly record struct FilePathMatcher : IIncludeable<string>

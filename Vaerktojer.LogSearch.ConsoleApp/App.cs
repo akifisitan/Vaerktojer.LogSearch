@@ -4,6 +4,6 @@ internal class App
 {
     public async Task Run()
     {
-        await Task.Delay(0);
+        var v = Prompt.Prompt.MultiSelect<string>("123");
     }
 }
