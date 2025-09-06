@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsAotCompatible>true</IsAotCompatible>
@@ -14,8 +14,6 @@
     <PackageReference Include="BenchmarkDotNet" Version="0.15.2" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Vaerktojer.LogSearch.Abstractions\Vaerktojer.LogSearch.Abstractions.csproj" />
-    <ProjectReference Include="..\Vaerktojer.LogSearch.Data\Vaerktojer.LogSearch.Data.csproj" />
     <ProjectReference Include="..\Vaerktojer.LogSearch.Lib\Vaerktojer.LogSearch.Lib.csproj" />
   </ItemGroup>
 </Project>

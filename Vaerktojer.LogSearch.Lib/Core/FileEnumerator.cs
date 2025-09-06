@@ -1,7 +1,7 @@
 ﻿using System.IO.Enumeration;
-using Vaerktojer.LogSearch.Abstractions;
+using Vaerktojer.LogSearch.Lib.Abstractions;
 
-namespace Vaerktojer.LogSearch.Lib;
+namespace Vaerktojer.LogSearch.Lib.Core;
 
 public static class FileEnumerator
 {

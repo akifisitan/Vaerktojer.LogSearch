@@ -19,6 +19,8 @@ public static class DIRegistrations
             x.AddZLoggerFile("log.txt");
         });
 
+        services.AddSingleton<App>();
+
         return services;
     }
 }

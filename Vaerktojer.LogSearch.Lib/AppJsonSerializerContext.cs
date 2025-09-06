@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-using Vaerktojer.LogSearch.Data;
+using Vaerktojer.LogSearch.Lib.Data;
 
 namespace Vaerktojer.LogSearch.Lib;
 

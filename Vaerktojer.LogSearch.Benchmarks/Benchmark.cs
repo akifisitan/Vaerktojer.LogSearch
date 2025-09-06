@@ -1,7 +1,9 @@
 ﻿using System.Threading.Channels;
 using BenchmarkDotNet.Attributes;
-using Vaerktojer.LogSearch.Data;
-using Vaerktojer.LogSearch.Lib;
+using Vaerktojer.LogSearch.Lib.Core;
+using Vaerktojer.LogSearch.Lib.Data;
+using Vaerktojer.LogSearch.Lib.Filters;
+using Vaerktojer.LogSearch.Lib.Matchers;
 
 namespace Vaerktojer.LogSearch.Benchmarks;
 

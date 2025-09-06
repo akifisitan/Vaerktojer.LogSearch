@@ -1,10 +1,10 @@
 ﻿using System.IO.Compression;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Vaerktojer.LogSearch.Abstractions;
-using Vaerktojer.LogSearch.Data;
+using Vaerktojer.LogSearch.Lib.Abstractions;
+using Vaerktojer.LogSearch.Lib.Data;
 
-namespace Vaerktojer.LogSearch.Lib;
+namespace Vaerktojer.LogSearch.Lib.Core;
 
 public sealed class ZipFileSearcher
 {

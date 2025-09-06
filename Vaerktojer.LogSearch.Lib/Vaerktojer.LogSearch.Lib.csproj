@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsAotCompatible>true</IsAotCompatible>
@@ -14,9 +14,5 @@
     <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.8" />
     <PackageReference Include="ZLogger" Version="2.5.10" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Vaerktojer.LogSearch.Abstractions\Vaerktojer.LogSearch.Abstractions.csproj" />
-    <ProjectReference Include="..\Vaerktojer.LogSearch.Data\Vaerktojer.LogSearch.Data.csproj" />
   </ItemGroup>
 </Project>

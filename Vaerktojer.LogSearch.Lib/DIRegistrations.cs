@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Vaerktojer.LogSearch.Lib.Core;
 
 namespace Vaerktojer.LogSearch.Lib;
 
