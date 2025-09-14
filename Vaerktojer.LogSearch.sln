@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vaerktojer.LogSearch.TestCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vaerktojer.Prompt", "..\Vaerktojer.Prompt\Vaerktojer.Prompt\Vaerktojer.Prompt.csproj", "{DF0DF98C-DABC-4C31-3E2B-FB314B4A6AB9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vaerktojer.Logging.File", "Vaerktojer.Logging.File\Vaerktojer.Logging.File.csproj", "{8551A278-81A0-47B9-A580-DC68E8F0D7B0}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,10 +39,6 @@ Global
 		{DF0DF98C-DABC-4C31-3E2B-FB314B4A6AB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF0DF98C-DABC-4C31-3E2B-FB314B4A6AB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF0DF98C-DABC-4C31-3E2B-FB314B4A6AB9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8551A278-81A0-47B9-A580-DC68E8F0D7B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8551A278-81A0-47B9-A580-DC68E8F0D7B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8551A278-81A0-47B9-A580-DC68E8F0D7B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8551A278-81A0-47B9-A580-DC68E8F0D7B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
