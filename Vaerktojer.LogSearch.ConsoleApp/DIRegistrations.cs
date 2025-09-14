@@ -1,23 +1,28 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Vaerktojer.Logging.File;
 using Vaerktojer.LogSearch.Lib;
-using ZLogger;
 
 namespace Vaerktojer.LogSearch.ConsoleApp;
 
 public static class DIRegistrations
 {
+    private static readonly string appBasePath = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        "Vaerktojer.LogSearch.ConsoleApp"
+    );
+
     public static IServiceCollection AddLogSearchConsoleApp(this IServiceCollection services)
     {
         services.AddLogSearchLib();
 
-        services.AddLogging(x =>
-        {
-            x.ClearProviders();
-            x.SetMinimumLevel(LogLevel.Trace);
-            x.AddZLoggerConsole();
-            x.AddZLoggerFile("log.txt");
-        });
+        services.AddVaerktojerFileLogging(
+            Path.Combine(appBasePath, "Logs"),
+            enableConsoleLogging: false
+#if DEBUG
+            ,
+            minimumLogLevel: Microsoft.Extensions.Logging.LogLevel.Trace
+#endif
+        );
 
         services.AddSingleton<App>();
 

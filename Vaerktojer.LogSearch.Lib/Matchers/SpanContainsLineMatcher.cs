@@ -2,11 +2,11 @@
 
 namespace Vaerktojer.LogSearch.Lib.Matchers;
 
-public readonly record struct SpanLineMatcher : ISpanLineMatcher
+public readonly record struct SpanContainsLineMatcher : ISpanLineMatcher
 {
     private readonly string _value;
 
-    public SpanLineMatcher(string value)
+    public SpanContainsLineMatcher(string value)
     {
         _value = value;
     }

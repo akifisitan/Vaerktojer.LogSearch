@@ -2,22 +2,30 @@
 using BenchmarkDotNet.Running;
 using Vaerktojer.LogSearch.Benchmarks;
 
-BenchmarkRunner.Run<ZipSearchBenchmark>();
-
+Bench();
 Environment.Exit(0);
+await Demo();
 
-var sw = Stopwatch.StartNew();
+static async Task Demo()
+{
+    var sw = Stopwatch.StartNew();
 
-await new ZipSearchBenchmark().Bench_Search_For_Pattern_In_Zip_Files_In_Directory_By_Chunking_Async();
+    await new LogFileSearchBenchmark().Bench_Search_For_Pattern_In_Log_Files_In_Directory_By_Chunking_Async();
+    await new LogFileSearchBenchmark().Bench_Search_For_Pattern_In_Log_Files_In_Directory_With_Channels();
 
-Console.WriteLine($"Run took {sw.Elapsed.TotalSeconds} seconds.");
+    //await new ZipSearchBenchmark().Bench_Search_For_Pattern_In_Log_Files_In_Directory_With_Channels();
 
-sw.Restart();
+    Console.WriteLine($"Run took {sw.Elapsed.TotalSeconds} seconds.");
 
-await new ZipSearchBenchmark().Bench_Search_For_Pattern_In_Log_Files_In_Directory_With_Channels();
+    sw.Restart();
 
-Console.WriteLine($"Run took {sw.Elapsed.TotalSeconds} seconds.");
+    //await new ZipSearchBenchmark().Bench_Search_For_Pattern_In_Log_Files_In_Directory_With_Channels();
 
-//new Benchmark().Bench_Search_For_Pattern_In_Zip_Files_In_Directory_Sequential();
+    //Console.WriteLine($"Run took {sw.Elapsed.TotalSeconds} seconds.");
+}
 
-BenchmarkRunner.Run<Benchmark>();
+static void Bench()
+{
+    //BenchmarkRunner.Run<ZipSearchBenchmark>();
+    BenchmarkRunner.Run<LogFileSearchBenchmark>();
+}

@@ -19,6 +19,7 @@
     <ProjectReference Include="..\..\Vaerktojer.Prompt\Vaerktojer.Prompt\Vaerktojer.Prompt.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Vaerktojer.Logging.File\Vaerktojer.Logging.File.csproj" />
     <ProjectReference Include="..\Vaerktojer.LogSearch.Lib\Vaerktojer.LogSearch.Lib.csproj" />
   </ItemGroup>
 </Project>
