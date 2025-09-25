@@ -1,5 +1,6 @@
 ﻿using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
+using Spectre.Console;
 using Vaerktojer.LogSearch.Lib.Core;
 using Vaerktojer.LogSearch.Lib.Data;
 using Vaerktojer.LogSearch.Lib.Filters;
@@ -17,6 +18,59 @@ internal class App(ILogger<App> logger)
     private const int _maxDegreeOfParallelism = 4;
 
     public async Task Run()
+    {
+        var currentDirectoryInfo = new DirectoryInfo(@"C:\users\user\desktop");
+        await Task.Delay(0);
+
+        while (true)
+        {
+            var (valid, fileSystemInfo) = AnsiConsole.Prompt(
+                new SelectionPrompt<(bool, FileSystemInfo?)>()
+                    .EnableSearch()
+                    .Title(currentDirectoryInfo.FullName)
+                    .PageSize(10)
+                    .AddChoices(
+                        [
+                            (false, null),
+                            .. currentDirectoryInfo.GetFileSystemInfos().Select(x => (true, x)),
+                        ]
+                    )
+                    .SearchPlaceholderText("")
+                    .MoreChoicesText("")
+                    .WrapAround(false)
+                    .UseConverter(x => x.Item2 is null ? ".." : x.Item2.Name)
+            );
+
+            if (!valid)
+            {
+                if (currentDirectoryInfo.Parent is not null)
+                {
+                    currentDirectoryInfo = currentDirectoryInfo.Parent;
+                }
+
+                continue;
+            }
+
+            if (fileSystemInfo is DirectoryInfo directoryInfo)
+            {
+                currentDirectoryInfo = directoryInfo;
+                continue;
+            }
+
+            if (fileSystemInfo is not FileInfo fileInfo)
+            {
+                throw new Exception("What can it even be?");
+            }
+
+            AnsiConsole.WriteLine(fileInfo.FullName);
+
+            await Task.Delay(5000);
+
+            AnsiConsole.Clear();
+        }
+    }
+
+    public async Task Run123()
     {
         var r = new Random();
 
